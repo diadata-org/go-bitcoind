@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 )
 
@@ -204,6 +205,19 @@ func (b *Bitcoind) GetHashesPerSec() (hashpersec float64, err error) {
 // GetInfo return result of "getinfo" command (Amazing !)
 func (b *Bitcoind) GetInfo() (i Info, err error) {
 	r, err := b.client.call("getinfo", nil)
+
+	log.Println(string(r.Result))
+
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &i)
+	return
+}
+
+// GetInfo return result of "getinfo" command (Amazing !)
+func (b *Bitcoind) GetBlockchainInfo() (i BlockchainInfo, err error) {
+	r, err := b.client.call("getblockchaininfo", nil)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
